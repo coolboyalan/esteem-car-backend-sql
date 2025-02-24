@@ -30,3 +30,5 @@ class Service {
     await document.destroy({ force: true });
   }
 }
+
+export default Service;
