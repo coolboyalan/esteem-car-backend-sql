@@ -10,7 +10,7 @@ class Service {
     if (!id) {
       return await this.Model.find({});
     }
-    return await this.Model.findById(id);
+    return await this.Model.findByPk(id);
   }
 
   static async getWithQuery(query) {

@@ -89,7 +89,56 @@ class BaseModel extends Model {
   //   const createdDocument = await super.create(data);
   //   return createdDocument;
   // }
+  //
 
+  static async find(filters) {
+    const {
+      search = "",
+      page = 1,
+      limit = 10,
+      order = [["createdAt", "DESC"]],
+    } = filters;
+
+    const attributes = this.rawAttributes;
+    const where = {};
+
+    // Apply filtering based on filterable fields
+    Object.keys(filters).forEach((key) => {
+      if (attributes[key] && attributes[key].filterable) {
+        where[key] = filters[key];
+      }
+    });
+
+    // Apply search across searchable fields
+    if (search) {
+      const searchConditions = Object.keys(attributes)
+        .filter((key) => attributes[key].searchable)
+        .map((key) => ({ [key]: { [Op.iLike]: `%${search}%` } }));
+
+      if (searchConditions.length > 0) {
+        where[Op.or] = searchConditions;
+      }
+    }
+
+    // Calculate pagination
+    const offset = (page - 1) * limit;
+
+    // Fetch data with pagination
+    const { count, rows } = await this.findAndCountAll({
+      where,
+      order,
+      limit,
+      offset,
+    });
+
+    return {
+      data: rows,
+      total: count,
+      page,
+      limit,
+      totalPages: Math.ceil(count / limit),
+    };
+  }
   static async create(data, options = {}) {
     const rawFields = this.getAttributes();
 
