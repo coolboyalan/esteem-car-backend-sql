@@ -1,9 +1,9 @@
 import BaseModel from "#models/base";
 import { DataTypes } from "sequelize";
 
-class User extends BaseModel {}
+class Lead extends BaseModel {}
 
-User.initialize({
+Lead.initialize({
   userType: {
     type: DataTypes.ENUM("Business", "Individual"),
     allowNull: false,
@@ -32,10 +32,6 @@ User.initialize({
     type: DataTypes.STRING,
     allowNull: false,
   },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   dob: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -46,4 +42,4 @@ User.initialize({
   },
 });
 
-export default User;
+export default Lead;
