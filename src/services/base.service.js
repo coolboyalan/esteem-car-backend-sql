@@ -6,9 +6,9 @@ class Service {
     return createdData;
   }
 
-  static async get(id, filters) {
+  static async get(id, filters = {}) {
     if (!id) {
-      return await this.Model.find({});
+      return await this.Model.find(filters);
     }
     return await this.Model.findByPk(id);
   }

@@ -22,7 +22,7 @@ class UserService extends Service {
 
   static async login(userData) {
     const { email, password } = userData;
-    const user = await this.Model.findOne({ where: { email } });
+    let user = await this.Model.findOne({ where: { email } });
     if (!user) {
       throw {
         status: false,
@@ -38,13 +38,13 @@ class UserService extends Service {
         httpStatus: httpStatus.UNAUTHORIZED,
       };
     }
+
+    user = user.toJSON();
+    delete user.password;
     return {
       token: createToken({ email }),
       userData: {
-        name: "User",
-        mobile: "1234567890",
-        fullName: "User",
-        email,
+        ...user,
       },
     };
   }

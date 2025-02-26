@@ -14,7 +14,7 @@ class LoanQueryService extends Service {
       const password = generateRandomPassword(10);
       loanQueryData.password = password;
       const createdUser = await UserService.create(loanQueryData);
-      loanQueryData.userId = createdUser.id;
+      loanQuery.userId = createdUser.id;
     }
 
     await loanQuery.save();

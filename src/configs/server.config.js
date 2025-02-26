@@ -10,8 +10,8 @@ import sessionMiddleware from "#middlewares/session";
 
 const server = express();
 
-if (!env.NODE_ENV === "development") {
-  sequelize.sync({ alter: true });
+if (env.NODE_ENV === "development") {
+  sequelize.sync();
 }
 
 server.use(cors());

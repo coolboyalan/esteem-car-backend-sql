@@ -28,7 +28,7 @@ const sequelize = new Sequelize(
   {
     host: config[environment].host,
     dialect: config[environment].dialect,
-    logging: environment === "development" ? console.log : false, // Show logs only in development
+    logging: environment === "development" ? false : false, // Show logs only in development
   },
 );
 
