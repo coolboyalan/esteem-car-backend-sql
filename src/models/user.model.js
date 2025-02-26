@@ -60,17 +60,19 @@ User.initialize(
           }
 
           for (const key of value) {
-            if (!key["countryOfBirth"] || !key["countryOfCitizenship"]) {
+            if (!key.length) {
               throw {
                 status: false,
-                message:
-                  "Country of birth and country of citizenship, both are required",
+                message: "Country of citizenship should be a valid country",
                 httpStatus: httpStatus.BAD_REQUEST,
               };
             }
           }
         },
       },
+    },
+    birthCountry: {
+      type: DataTypes.STRING,
     },
     address: {
       type: DataTypes.STRING,

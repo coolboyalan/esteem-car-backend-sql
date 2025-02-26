@@ -121,8 +121,14 @@ class BaseModel extends Model {
   static async create(data, options = {}) {
     const transaction = session.get("transaction");
     const rawFields = this.getAttributes();
-    const createdDocument = await super.create(data, { transaction });
+    const createdDocument = await super.create(data);
     return createdDocument;
+  }
+
+  async save() {
+    const transaction = session.get("transaction");
+    await super.save({ transaction });
+    return this;
   }
 
   static getSearchableFields(allowedFields) {

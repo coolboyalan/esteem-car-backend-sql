@@ -25,7 +25,7 @@ LoanQuery.initialize(
         key: Lead.primaryKeyAttribute,
       },
     },
-    queryType: {
+    userType: {
       type: DataTypes.ENUM("Business", "Individual"),
       allowNull: false,
     },
