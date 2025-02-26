@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import { Model, DataTypes, Op } from "sequelize";
 import sequelize from "#configs/database";
+import { session } from "#middlewares/session";
 // import TransactionManager from "#utils/transaction";
 
 // TODO: IMPLEMENT INNER JOIN, FIND A WORKAROUND
@@ -30,12 +31,10 @@ class BaseModel extends Model {
         //},
         createdAt: {
           type: DataTypes.DATE,
-          allowNull: false,
           filterable: true, // If you want createdAt to be filterable
         },
         updatedAt: {
           type: DataTypes.DATE,
-          allowNull: false,
           filterable: true, // If you want updatedAt to be filterable
         },
       },
@@ -69,27 +68,6 @@ class BaseModel extends Model {
       return acc;
     }, {});
   }
-
-  /**
-   * Wraps all static methods inside a transaction, ensuring one transaction per request.
-   * @param {Function} method - The model method to execute.
-   * @param  {...any} args - Arguments to pass to the method.
-   * @returns {Promise<any>} - The result of the method execution.
-   */
-  // static async runWithTransaction(method, ...args) {
-  //   return await TransactionManager.execute(async (transaction) => {
-  //     return await method.apply(this, [...args, { transaction }]);
-  //   });
-  // }
-  // static async create(data) {
-  //   const rawFields = this.getAttributes();
-  //   for (const key in data) {
-  //     rawFields[key] ? null : delete data[key];
-  //   }
-  //   const createdDocument = await super.create(data);
-  //   return createdDocument;
-  // }
-  //
 
   static async find(filters) {
     const {
@@ -139,10 +117,11 @@ class BaseModel extends Model {
       totalPages: Math.ceil(count / limit),
     };
   }
-  static async create(data, options = {}) {
-    const rawFields = this.getAttributes();
 
-    const createdDocument = await super.create(data);
+  static async create(data, options = {}) {
+    const transaction = session.get("transaction");
+    const rawFields = this.getAttributes();
+    const createdDocument = await super.create(data, { transaction });
     return createdDocument;
   }
 
@@ -184,44 +163,6 @@ class BaseModel extends Model {
     return updatedRecord;
   }
 
-  updateFields(updateData) {
-    for (const i in updateData) {
-      this[i] = updateData[i];
-    }
-  }
-
-  // static async updateById(id, updates, options = {}) {
-  //   return this.runWithTransaction(
-  //     async (id, updates, options) => {
-  //       this.idChecker(id);
-  //       const [updatedCount, updatedRecord] = await this.update(updates, {
-  //         where: { id },
-  //         ...options,
-  //         transaction: TransactionManager.getTransaction(),
-  //       });
-
-  //       if (updatedCount !== 1) {
-  //         throw { status: false, httpStatus: 404, message: `${this.name} not found` };
-  //       }
-  //       return updatedRecord;
-  //     },
-  //     id,
-  //     updates,
-  //     options
-  //   );
-  // }
-
-  // ✅ Automatically handles transactions for findOne
-  // static async findOne(options) {
-  //   return this.runWithTransaction(async (options) => {
-  //     return await super.findOne(options);
-  //   }, options);
-  // }
-  /**
-   * Assign updated fields in the model instance
-   * @param {Object} updates - The updated fields object of the model
-   * @return {Void}
-   * */
   updateFields(updates) {
     for (let i in updates) {
       this[i] = updates[i];
@@ -253,38 +194,6 @@ class BaseModel extends Model {
     }
     return updatedRecord;
   }
-
-  // static async deleteById(id) {
-  //   return TransactionManager.execute(async (transaction) => {
-  //     this.idChecker(id);
-  //     const time = new Date();
-
-  //     const [updatedCount, updatedRecord] = await this.update(
-  //       { deletedAt: time },
-  //       {
-  //         where: { id, deletedAt: null },
-  //         individualHooks: true,
-  //         transaction, // Attach the transaction
-  //       }
-  //     );
-
-  //     if (updatedCount !== 1 || !updatedRecord || !updatedRecord.length) {
-  //       throw {
-  //         status: false,
-  //         httpStatus: httpStatus.NOT_FOUND,
-  //         message: `${this.name} not found`,
-  //       };
-  //     }
-
-  //     return updatedRecord;
-  //   });
-  // }
-
-  // static async destroy(options) {
-  //   return TransactionManager.execute(async (transaction) => {
-  //     return super.destroy({ ...options, transaction });
-  //   });
-  // }
 
   static idChecker(id) {
     if (!id || isNaN(id)) {

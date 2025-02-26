@@ -10,7 +10,7 @@ import sessionMiddleware from "#middlewares/session";
 
 const server = express();
 
-if (env.NODE_ENV === "development") {
+if (!env.NODE_ENV === "development") {
   sequelize.sync({ alter: true });
 }
 

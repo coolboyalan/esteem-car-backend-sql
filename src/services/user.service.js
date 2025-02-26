@@ -1,11 +1,24 @@
 import bcrypt from "bcryptjs";
-import Admin from "#models/admin";
+import User from "#models/user";
 import httpStatus from "http-status";
 import Service from "#services/base";
 import { createToken } from "#utils/jwt";
 
-class AdminService extends Service {
-  static Model = Admin;
+class UserService extends Service {
+  static Model = User;
+
+  static async create(userData) {
+    const { role, nzCitizen } = userData;
+    if (!role) {
+      userData.role = "user";
+    }
+    if (nzCitizen === null || nzCitizen === undefined) {
+      userData.nzCitizen = false;
+    }
+
+    const user = await super.create(userData);
+    return user;
+  }
 
   static async login(userData) {
     const { email, password } = userData;
@@ -28,13 +41,13 @@ class AdminService extends Service {
     return {
       token: createToken({ email }),
       userData: {
-        name: "Admin",
+        name: "User",
         mobile: "1234567890",
-        fullName: "Admin",
+        fullName: "User",
         email,
       },
     };
   }
 }
 
-export default AdminService;
+export default UserService;

@@ -1,3 +1,4 @@
+import sequelize from "#configs/database";
 import { createNamespace } from "cls-hooked";
 
 export const session = createNamespace("userSession");
@@ -11,6 +12,7 @@ const sessionMiddleware = (req, _res, next) => {
     //  transactionSession.startTransaction();
     //  session.set("transaction", transactionSession);
     //}
+    session.set("transaction", await sequelize.transaction());
     session.set("files", req.files ?? null);
     next();
   });

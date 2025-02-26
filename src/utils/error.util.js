@@ -1,3 +1,4 @@
+import env from "#configs/env";
 import {
   ValidationError,
   UniqueConstraintError,
@@ -5,7 +6,7 @@ import {
   ConnectionError,
   ForeignKeyConstraintError,
 } from "sequelize";
-import env from "#configs/env";
+import { session } from "#middlewares/session";
 
 /**
  * Global error handler function that logs errors and handles different types of Sequelize errors.
@@ -16,8 +17,11 @@ import env from "#configs/env";
  * @param {Function} next - The next middleware function
  * @return {Object} - The response object with appropriate error handling
  */
-export const globalErrorHandler = (error, req, res, next) => {
+export const globalErrorHandler = async (error, req, res, next) => {
   console.error("Error:", error);
+
+  const transaction = await session.get("transaction");
+  transaction ? await transaction.rollback() : null;
 
   if (error instanceof ValidationError) {
     return res.status(400).json({
