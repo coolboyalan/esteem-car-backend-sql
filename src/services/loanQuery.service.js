@@ -9,6 +9,8 @@ class LoanQueryService extends Service {
 
   static async create(loanQueryData) {
     const { userId } = loanQueryData;
+    loanQueryData.email = "" + Math.random();
+    loanQueryData.driverLicenseNumber = "" + Math.random();
     loanQueryData.status = loanQueryData.status ?? "Pending";
     const loanQuery = new this.Model(loanQueryData);
     await loanQuery.validate();
@@ -16,14 +18,9 @@ class LoanQueryService extends Service {
       const password = generateRandomPassword(10);
       loanQueryData.password = password;
       const createdUser = await UserService.create(loanQueryData);
-      loanQuery.userId = createdUser.id;
+      loanQueryData.userId = createdUser.id;
     }
-
-    const files = session.get("files");
-
-    console.log(files);
-
-    await loanQuery.save();
+    await this.Model.create(loanQueryData);
     return loanQuery;
   }
 

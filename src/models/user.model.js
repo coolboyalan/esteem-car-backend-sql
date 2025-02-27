@@ -90,7 +90,7 @@ User.initialize(
       type: DataTypes.INTEGER,
     },
     residentType: {
-      type: DataTypes.ENUM("Boarding"),
+      type: DataTypes.ENUM("Boarding", "Renting", "Owning"),
     },
   },
   {

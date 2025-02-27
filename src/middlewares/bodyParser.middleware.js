@@ -12,9 +12,8 @@ const bodyParser = asyncHandler((req, _res, next) => {
   }
 
   req.body = objectParser(req.body);
-  for (let key in req.body) {
-    if (req.body[key]) continue;
-    delete req.body[key];
+  for (const key in req.body) {
+    if (req.body[key] === "") delete req.body[key];
   }
   next();
 });

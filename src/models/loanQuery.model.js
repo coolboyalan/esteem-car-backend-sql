@@ -93,7 +93,7 @@ LoanQuery.initialize(
       type: DataTypes.ENUM("Owned", "Rent"),
       allowNull: false,
     },
-    rentAggrement: {
+    rentAgreement: {
       type: DataTypes.STRING,
       file: true,
     },
@@ -138,7 +138,7 @@ LoanQuery.initialize(
       type: DataTypes.DATE,
     },
     status: {
-      type: DataTypes.ENUM("Approved", "Pending", "In Progress"),
+      type: DataTypes.ENUM("Approved", "Disapproved", "Pending", "In Progress"),
       allowNull: false,
       default: "Pending",
     },

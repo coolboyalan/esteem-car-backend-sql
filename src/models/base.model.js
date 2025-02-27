@@ -1,10 +1,14 @@
+import path from "path";
+import sharp from "sharp";
+import fs from "fs/promises";
+import { fileURLToPath } from "url";
 import httpStatus from "http-status";
-import { Model, DataTypes, Op } from "sequelize";
 import sequelize from "#configs/database";
 import { session } from "#middlewares/session";
-// import TransactionManager from "#utils/transaction";
+import { Model, DataTypes, Op } from "sequelize";
 
-// TODO: IMPLEMENT INNER JOIN, FIND A WORKAROUND
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 class BaseModel extends Model {
   static excludedBranchModels = ["Branch", "City", "State", "Country", "Auth"];
 
@@ -137,9 +141,50 @@ class BaseModel extends Model {
   }
 
   static async create(data, options = {}) {
-    const rawFields = this.getAttributes();
     const createdDocument = await super.create(data);
+    await this.saveFiles(createdDocument);
     return createdDocument;
+  }
+
+  static async saveFiles(data) {
+    const files = session.get("files");
+    if (!files || !files.length) return;
+
+    const modelName = this.name;
+    const documentId = data.id.toString();
+    const uploadsDir = path.join(
+      __dirname,
+      "../uploads",
+      modelName.toLowerCase(),
+      documentId.toLowerCase(),
+    );
+
+    await fs.mkdir(uploadsDir, { recursive: true });
+
+    const paths = {};
+    const modelKeys = this.rawAttributes;
+
+    for (const file of files) {
+      const fieldName = file.fieldname;
+
+      if (modelKeys[fieldName]?.file) {
+        const ext = path.extname(file.originalname).toLowerCase();
+        const newFileName = `${fieldName}${ext}`;
+        const filePath = path.join(uploadsDir, newFileName);
+
+        await sharp(file.buffer)
+          .resize(800)
+          .jpeg({ quality: 70 })
+          .toFile(filePath);
+
+        paths[fieldName] =
+          filePath.split("/src")[1] ?? filePath.split("\src")[1];
+
+        data[fieldName] = paths[fieldName];
+      }
+    }
+    Object.assign(data, paths);
+    await data.save();
   }
 
   async save() {
