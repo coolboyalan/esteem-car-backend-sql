@@ -145,6 +145,27 @@ LoanQuery.initialize(
     comments: {
       type: DataTypes.TEXT,
     },
+    tradeCar: {
+      type: DataTypes.BOOLEAN,
+    },
+    vehicleMake: {
+      type: DataTypes.STRING,
+    },
+    vehicleModel: {
+      type: DataTypes.STRING,
+    },
+    vehicleYear: {
+      type: DataTypes.INTEGER,
+    },
+    vehicleVariant: {
+      type: DataTypes.STRING,
+    },
+    kmDriven: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: 0, // Ensure it's a positive number
+      },
+    },
   },
   {
     hooks: {

@@ -20,6 +20,31 @@ class LoanQueryService extends Service {
       const createdUser = await UserService.create(loanQueryData);
       loanQueryData.userId = createdUser.id;
     }
+    if (loanQueryData.tradeCar) {
+      const {
+        tradeCar,
+        vehicleMake,
+        vehicleModel,
+        vehicleYear,
+        vehicleVariant,
+        kmDriven,
+      } = loanQueryData;
+
+      if (
+        !tradeCar ||
+        !vehicleMake ||
+        !vehicleModel ||
+        !vehicleYear ||
+        !vehicleVariant ||
+        !kmDriven
+      ) {
+        throw {
+          status: false,
+          message: "All fields related to car trade are required",
+          httpStatus: httpStatus.BAD_REQUEST,
+        };
+      }
+    }
     await this.Model.create(loanQueryData);
     return loanQuery;
   }
