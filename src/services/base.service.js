@@ -19,14 +19,14 @@ class Service {
   }
 
   static async update(id, updates) {
-    const document = await this.Model.findById(id);
+    const document = await this.Model.findByPk(id);
     document.updateFields(updates);
     await document.save();
     return document;
   }
 
-  static async delete(id) {
-    const document = await this.Model.findById(id);
+  static async deleteDoc(id) {
+    const document = await this.Model.findByPk(id);
     await document.destroy({ force: true });
   }
 }
