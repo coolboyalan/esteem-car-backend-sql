@@ -110,16 +110,17 @@ class BaseModel extends Model {
     });
 
     return {
-      data: rows,
-      total: count,
-      page,
-      limit,
-      totalPages: Math.ceil(count / limit),
+      result: rows,
+      pagination: {
+        totalItems: count,
+        totalPages: Math.ceil(count / limit),
+        itemsPerPage: limit,
+        currentPage: page,
+      },
     };
   }
 
   static async create(data, options = {}) {
-    const transaction = session.get("transaction");
     const rawFields = this.getAttributes();
     const createdDocument = await super.create(data);
     return createdDocument;
