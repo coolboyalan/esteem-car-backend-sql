@@ -120,6 +120,22 @@ class BaseModel extends Model {
     };
   }
 
+  static async findById(id, allowNull = false) {
+    const data = await this.findByPk(id);
+    if (allowNull) {
+      return data;
+    }
+    if (!data) {
+      throw {
+        status: false,
+        message: `${this.name} not found with id ${id}`,
+        httpStatus: httpStatus.BAD_REQUEST,
+      };
+    }
+
+    return data;
+  }
+
   static async create(data, options = {}) {
     const rawFields = this.getAttributes();
     const createdDocument = await super.create(data);

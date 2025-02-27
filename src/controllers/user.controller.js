@@ -25,7 +25,7 @@ export const create = asyncHandler(async (req, res, next) => {
 });
 
 export const update = asyncHandler(async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
   const updatedDoc = await UserService.update(id, req.body);
   sendResponse(httpStatus.OK, res, updatedDoc, "Record updated successfully");
 });
