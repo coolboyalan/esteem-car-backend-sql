@@ -50,4 +50,31 @@ class UserService extends Service {
   }
 }
 
+async function defaultUser() {
+  const existing = await User.find({});
+  if (existing.length) return;
+  const user = {
+    role: "admin",
+    title: "Mr",
+    firstName: "John",
+    middleName: "A",
+    lastName: "Doe",
+    mobileNo: "+64211234567",
+    email: "johndoe@example.com",
+    dob: "1990-05-15",
+    password: "password",
+    nzCitizen: true,
+    citizenshipDetails: ["New Zealand"],
+    birthCountry: "New Zealand",
+    address: "123 Example Street",
+    city: "Auckland",
+    postalCode: "1010",
+    timeAtCurrentAddressInYears: 2,
+    timeAtCurrentAddressInMonths: 6,
+    residentType: "Renting",
+  };
+
+  await User.create(user);
+}
+
 export default UserService;

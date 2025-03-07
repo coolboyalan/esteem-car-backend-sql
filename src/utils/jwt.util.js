@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import httpStatus from "#utils/httpStatus";
 import env from "#configs/env";
 
 export const createToken = (payload, secret = env.JWT_SECRET, options = {}) => {
@@ -24,6 +25,10 @@ export const verifyToken = (token, secret = env.JWT_SECRET) => {
     const payload = jwt.verify(token, secret);
     return payload;
   } catch (err) {
-    throw new Error("Invalid token please login again");
+    throw {
+      status: false,
+      message: "Invalid token please login again",
+      httpStatus: httpStatus.UNAUTHORIZED,
+    };
   }
 };
